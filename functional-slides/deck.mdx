@@ -1,0 +1,171 @@
+import { future } from "mdx-deck/themes";
+import { Box, Heading } from "rebass";
+
+export const themes = [future];
+
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+# Functional Programming
+
+By: Levi Butcher
+
+---
+
+# The Evolution of Languages
+
+- Procedural - the birth of functions
+
+- Object Oriented - global data is bad, lets group functions and data together
+
+- Functional - Programming through restrictions, No Mutations, Only Pure Functions
+
+---
+
+
+### The Rules of Functional Programming
+
+1. Only write Pure Functions
+
+---
+
+# Pure Function
+
+A Pure Function is a function that given the same input, you will always get the same output without Side Effects
+
+f(5) -> 10
+
+f(6) -> 12
+
+f(5) -> 5 Violating Pure Functions
+
+---
+
+# A Java Pure Function
+
+<SyntaxHighlighter language="java" style={atomDark}>
+  {`
+  class Calculator {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+  }
+  main() {
+      int result = Calculator.add(5,2);
+      result == 7;
+  }
+  `}
+</SyntaxHighlighter>
+
+---
+
+# Function Composition
+
+We can combine functions to make new functions
+
+f(x) = 5x;
+g(x) = x/5;
+
+y = f(g) == (x/5) \* 5
+
+result = y(1)
+
+result == 5
+
+---
+
+<SyntaxHighlighter language="java" style={atomDark}>
+  {`
+    public int divideByFive(int a) {
+        return a / 5;
+    }
+    public int multiplyByFive(int a) {
+        return a * 5;
+    }
+    public Function compose(Func a, Func b) {
+        return (x) -> a(b(x));
+    }
+    var multiplyThenDivide = compose(divideByFive, multipleByFive);
+    multiplyThenDivide()
+  `}
+</SyntaxHighlighter>
+
+---
+
+We can do better then that... With the power of Currying
+
+---
+
+<SyntaxHighlighter language="java" style={atomDark}>
+  {`
+    public int divide(int a, int b) {
+        return a / b;
+    }
+    public int multiply(int a, int b) {
+        return a * b;
+    }
+    public Function<T, F> compose(Func<T, F> a, Func<F, T> b) {
+        return (x) -> a(b(x));
+    }
+    var multiplyByFiveThenDivideByFive = compose(divide(5), multiply(5));
+    multiplyByFiveThenDivideByFive(5)
+  `}
+</SyntaxHighlighter>
+
+---
+
+# Higher Order Functions
+
+Higer Order Functions - a function that takes in another function as a arguement.
+
+*compose* is a examply of a higher order functions
+
+---
+
+## Higher Order Examples (The Building Blocks of FP)
+
+* map
+* reduce (fold)
+* filter
+
+---
+
+
+## Map
+
+Returns a new list, turning every element inside of list into a type B using the function provided
+
+```java
+// [A] => [B]
+List<B> map(Function<A, B> func, List<A> list);
+
+listOfStrings = map(a -> a.toString(), listOfInts);
+```
+
+---
+
+## Filter
+
+Returns a new list of A, that is a list of all elements that returned true from the passed in function
+
+```java
+// [A] => [A]
+List<A> filter(Function<A, Boolean> func, List<A> list)
+
+only1s = filter(a -> a == 1, listOfInts);
+```
+
+---
+
+## Reduce (also known as fold)
+Returns a value,
+
+```java
+// [A] => B
+B reduce(A identityValue, BiFunction<A, B> func, List<A> list)
+
+// This version uses the two first elements of list
+B reduce(BiFunction<A, B, B> func, List<A> list)
+
+sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
+```

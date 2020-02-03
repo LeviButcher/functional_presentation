@@ -1,0 +1,17 @@
+{
+  "name": "functional-slides",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo nope",
+    "start": "mdx-deck deck.mdx"
+  },
+  "author": "Levi Butcher",
+  "license": "MIT",
+  "dependencies": {
+    "mdx-deck": "^3.1.0",
+    "react-syntax-highlighter": "^12.2.1",
+    "rebass": "^4.0.7"
+  }
+}

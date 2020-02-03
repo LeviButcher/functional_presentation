@@ -1,5 +1,5 @@
 import { future } from "mdx-deck/themes";
-import { Box, Heading } from "rebass";
+import { Grid, Typography } from "@material-ui/core";
 
 export const themes = [future];
 
@@ -12,32 +12,41 @@ By: Levi Butcher
 
 ---
 
-# The Evolution of Languages
+### The Evolution of Languages
 
 - Procedural - the birth of functions
 
 - Object Oriented - global data is bad, lets group functions and data together
 
-- Functional - Programming through restrictions, No Mutations, Only Pure Functions
+- Functional - Only use Pure Functions
 
 ---
 
+### Pure Function
 
-### The Rules of Functional Programming
 
-1. Only write Pure Functions
+A Pure Function is a function that given the same input, you will always get the same output, ***without Side Effects***
 
----
-
-# Pure Function
-
-A Pure Function is a function that given the same input, you will always get the same output without Side Effects
+Think Vertical Line Test in Math.
 
 f(5) -> 10
 
 f(6) -> 12
 
 f(5) -> 5 Violating Pure Functions
+
+---
+
+### Side Effects
+
+A **Side Effect** is the result of something else changing outside of the scope of the function you are calling.
+
+Examples of Side Effects
+
+* Global Data being set
+* Anything Dealing with I/O
+* Calling databases
+* Throwing Errors
 
 ---
 
@@ -59,6 +68,25 @@ f(5) -> 5 Violating Pure Functions
 
 ---
 
+## That's it
+
+Functional Programming is programming with a set of hard requirements (aka Pure Functions).
+
+However, Functional Lanagues have some important concepts that you should know.
+
+---
+
+## First Class Functions
+
+Functions are **first class** if we can store a function into a variable.
+
+```java
+var add = Calculator::add;
+add(5, 2);
+```
+
+---
+
 # Function Composition
 
 We can combine functions to make new functions
@@ -76,14 +104,14 @@ result == 5
 
 <SyntaxHighlighter language="java" style={atomDark}>
   {`
-    public int divideByFive(int a) {
+    public static int divideByFive(int a) {
         return a / 5;
     }
-    public int multiplyByFive(int a) {
+    public static int multiplyByFive(int a) {
         return a * 5;
     }
-    public Function compose(Func a, Func b) {
-        return (x) -> a(b(x));
+    public static <A, B, C> Function<A, C> compose(Function<A, B> f, Function<B, C> g) {
+        return (x) -> g.apply(f.apply(x));
     }
     var multiplyThenDivide = compose(divideByFive, multipleByFive);
     multiplyThenDivide()
@@ -169,3 +197,17 @@ B reduce(BiFunction<A, B, B> func, List<A> list)
 
 sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
 ```
+
+---
+
+### Alright, but I don't really see the benifits here
+
+---
+
+# Challenge
+
+You have been given a list of strings that represent the run-time of various satelites. If the satelite was offline, then the value will be a empty string.
+
+Compute the average run-time of the satelites that are onlinie, while also figuring out how many satelites are offline.
+
+Satelite Data: ["48", "20" , "", "100", "18", "47", "", "", ""]

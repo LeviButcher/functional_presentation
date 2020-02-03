@@ -10,6 +10,7 @@
   "author": "Levi Butcher",
   "license": "MIT",
   "dependencies": {
+    "@material-ui/core": "^4.9.1",
     "mdx-deck": "^3.1.0",
     "react-syntax-highlighter": "^12.2.1",
     "rebass": "^4.0.7"

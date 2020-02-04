@@ -29,8 +29,8 @@ public class FunctionalUtilsTest {
         assertEquals(multiplyByFive(1), 5);
         var divideByFive = FunctionalUtils.curry(Calculator::divide, 5);
         assertEquals(divideByFive(5), 1);
-        var multiplyThenDivideByFive = FunctionalUtils.compose(divideByFive, multiplyByFive);
-        var result = multiplyThenDivideByFive.apply(5);
+        var divideByFiveThenMultiplyByFive = FunctionalUtils.compose(divideByFive, multiplyByFive);
+        var result = divideByFiveThenMultiplyByFive.apply(5);
         assertEquals(expectedResult, result);
     }
 

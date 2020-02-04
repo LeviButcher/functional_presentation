@@ -5,10 +5,15 @@ export const themes = [future];
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Box } from "rebass";
+import Highlight from "./Highlight";
+import SlidePadding from "./SlidePadding";
 
 # Functional Programming
 
 By: Levi Butcher
+
+[Github With Source Code](https://github.com/LeviButcher/functional_presentation)
 
 ---
 
@@ -21,13 +26,12 @@ By: Levi Butcher
 - Functional - Only use Pure Functions
 
 ---
+<SlidePadding>
 
 ### Pure Function
 
 
 A Pure Function is a function that given the same input, you will always get the same output, ***without Side Effects***
-
-Think Vertical Line Test in Math.
 
 f(5) -> 10
 
@@ -35,11 +39,17 @@ f(6) -> 12
 
 f(5) -> 5 Violating Pure Functions
 
+</SlidePadding>
+
 ---
 
 ### Side Effects
 
-A **Side Effect** is the result of something else changing outside of the scope of the function you are calling.
+<SlidePadding>
+
+A <Highlight>Side Effect</Highlight> is the result of something else changing outside of the scope of the function you are calling.
+
+</SlidePadding>
 
 Examples of Side Effects
 
@@ -47,6 +57,8 @@ Examples of Side Effects
 * Anything Dealing with I/O
 * Calling databases
 * Throwing Errors
+
+If your method is returning void, it has side effects.
 
 ---
 
@@ -68,17 +80,29 @@ Examples of Side Effects
 
 ---
 
+### The Benifits of Pure Functions
+
+- Easy to <Highlight>Reason About</Highlight> your program
+- Highly Composable, No coupling
+- Super easy to test (Haskell writes them for you)
+
+---
+
+<SlidePadding>
+
 ## That's it
 
 Functional Programming is programming with a set of hard requirements (aka Pure Functions).
 
-However, Functional Lanagues have some important concepts that you should know.
+However, the combination of Pure Functions with some Functional Programming Concepts leads to amazing results.
+
+</SlidePadding>
 
 ---
 
 ## First Class Functions
 
-Functions are **first class** if we can store a function into a variable.
+Functions are <Highlight>First Class</Highlight>, if we can store a function into a variable.
 
 ```java
 var add = Calculator::add;
@@ -87,14 +111,16 @@ add(5, 2);
 
 ---
 
-# Function Composition
+## Function Composition
 
 We can combine functions to make new functions
 
 f(x) = 5x;
 g(x) = x/5;
 
-y = f(g) == (x/5) \* 5
+f(g) == (x/5) \* 5
+
+y = f(g);
 
 result = y(1)
 
@@ -110,17 +136,17 @@ result == 5
     public static int multiplyByFive(int a) {
         return a * 5;
     }
-    public static <A, B, C> Function<A, C> compose(Function<A, B> f, Function<B, C> g) {
-        return (x) -> g.apply(f.apply(x));
+    public static <A, B, C> Function<A, C> compose(Function<A, B> g, Function<B, C> f) {
+        return (x) -> f.apply(g.apply(x));
     }
     var multiplyThenDivide = compose(divideByFive, multipleByFive);
-    multiplyThenDivide()
+    multiplyThenDivide(1) == 5
   `}
 </SyntaxHighlighter>
 
 ---
 
-We can do better then that... With the power of Currying
+We can do better then that... With the power of <Highlight>Currying</Highlight>
 
 ---
 
@@ -132,25 +158,31 @@ We can do better then that... With the power of Currying
     public int multiply(int a, int b) {
         return a * b;
     }
-    public Function<T, F> compose(Func<T, F> a, Func<F, T> b) {
-        return (x) -> a(b(x));
+    public static <A, B, C> Function<B, C> curry(BiFunction<A, B, C> f, A arg) {
+        return (x) -> f.apply(arg, x);
     }
-    var multiplyByFiveThenDivideByFive = compose(divide(5), multiply(5));
+    var multiplyByFive = FunctionalUtils.curry(Calculator::multiply, 5);
+    var divideByFive = FunctionalUtils.curry(Calculator::divide, 5);
+    var divideByFiveThenMultiplyByFive = compose(divideByFive, multiplyByFive);
     multiplyByFiveThenDivideByFive(5)
   `}
 </SyntaxHighlighter>
 
 ---
 
-# Higher Order Functions
+<SlidePadding>
 
-Higer Order Functions - a function that takes in another function as a arguement.
+## Higher Order Functions
 
-*compose* is a examply of a higher order functions
+A <Highlight>Higher Order Function</Highlight> is a function that takes in another function as a arguement.
+
+*compose* and *curry* are examples of higher order functions
+
+</SlidePadding>
 
 ---
 
-## Higher Order Examples (The Building Blocks of FP)
+## The Sacred Tools of FP
 
 * map
 * reduce (fold)
@@ -158,6 +190,41 @@ Higer Order Functions - a function that takes in another function as a arguement
 
 ---
 
+<SlidePadding>
+
+## Reduce (also known as fold)
+
+Reduce combines a list into a single result using the function provided with the help of a identity value
+
+```java
+// [A] => B
+B reduce(A identityValue, BiFunction<A, B> func, List<A> list)
+
+// This version uses the two first elements of list
+B reduce(BiFunction<A, B, B> func, List<A> list)
+
+sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
+```
+
+</SlidePadding>
+
+---
+
+<SyntaxHighlighter language="java" style={atomDark}>
+{`// [A] => B
+public static <A, B> B reduce(B identityValue,
+  BiFunction<B, A, B> f, List<A> list) {
+  if(list.isEmpty()) {
+      return identityValue;
+  }
+  var result =  f.apply(identityValue, list.get(0));
+  return reduce(result, f, list.subList(1, list.size()));
+}`}
+</SyntaxHighlighter>
+
+---
+
+<SlidePadding>
 
 ## Map
 
@@ -170,7 +237,29 @@ List<B> map(Function<A, B> func, List<A> list);
 listOfStrings = map(a -> a.toString(), listOfInts);
 ```
 
+</SlidePadding>
+
 ---
+
+<SyntaxHighlighter language="java" style={atomDark}>
+{`// [A] => [B]
+public static <A, B> List<B> map(Function<A,B> f, List<A> list) {
+  return reduce(List.of(), (acc, curr) -> {
+      // This would be much easier if java's List api abide by pure functions
+      var result = f.apply(curr);
+      return Stream.of(
+              List.of(result).stream(),
+              acc.stream()
+      ).flatMap(i -> i).collect(Collectors.toList());
+  }, list);
+}
+`}
+</SyntaxHighlighter>
+
+
+---
+
+<SlidePadding>
 
 ## Filter
 
@@ -183,20 +272,26 @@ List<A> filter(Function<A, Boolean> func, List<A> list)
 only1s = filter(a -> a == 1, listOfInts);
 ```
 
+</SlidePadding>
+
 ---
 
-## Reduce (also known as fold)
-Returns a value,
-
-```java
-// [A] => B
-B reduce(A identityValue, BiFunction<A, B> func, List<A> list)
-
-// This version uses the two first elements of list
-B reduce(BiFunction<A, B, B> func, List<A> list)
-
-sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
-```
+<SyntaxHighlighter language="java" style={atomDark}>
+{`// [A] => [A]
+public static <A> List<A> filter(Function<A, Boolean> f, List<A> list) {
+    return reduce(List.of(), (acc, curr) -> {
+        var shouldReturn = f.apply(curr);
+        if(shouldReturn) {
+            return Stream.of(
+                    acc.stream(),
+                    List.of(curr).stream()
+            ).flatMap(i -> i).collect(Collectors.toList());
+        }
+        return acc;
+    }, list);
+}
+`}
+</SyntaxHighlighter>
 
 ---
 
@@ -206,8 +301,79 @@ sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
 
 # Challenge
 
-You have been given a list of strings that represent the run-time of various satelites. If the satelite was offline, then the value will be a empty string.
+You have been given a list of strings that represent the run-time of various satellites. If the satellite was offline, then the value will be a empty string.
 
-Compute the average run-time of the satelites that are onlinie, while also figuring out how many satelites are offline.
+Compute the average run-time of the satellites that are online, while also reporting how many satellites are offline.
 
 Satelite Data: ["48", "20" , "", "100", "18", "47", "", "", ""]
+
+---
+
+Inside Challenge.java
+
+<SyntaxHighlighter language="java" style={atomDark}>
+{`var expectedAverage = 46;
+  var expectedOfflineCount = 4;
+  // Start
+  var onlineSat = FunctionalUtils.filter(x -> !x.isEmpty(), satelliteData);
+  var onlineSatNumbers = FunctionalUtils.map(Integer::valueOf, onlineSat);
+  var offlineSatCount =
+    FunctionalUtils.filter(String::isEmpty, satelliteData).size();
+  var onlineLength = onlineSat.size();
+  var onlineAverage =
+    FunctionalUtils.reduce(0, Calculator::add, onlineSatNumbers) / onlineLength;
+  // End
+  assertEquals(expectedAverage, onlineAverage);
+  assertEquals(expectedOfflineCount, offlineSatCount);`}
+</SyntaxHighlighter>
+
+---
+
+<SyntaxHighlighter language="java" style={atomDark}>
+{`var expectedAverage = 46;
+  var expectedOfflineCount = 4;
+  // Start
+  var sumOfSatellites = 0;
+  var offlineSatCount = 0;
+  var satelliteSize = 0;
+  for (var ele : satelliteData) {
+      if(ele.isEmpty()) {
+          offlineSatCount++;
+      }
+      else {
+              var eleNumber = Integer.parseInt(ele);
+              sumOfSatellites += eleNumber;
+              satelliteSize++;
+      }
+  }
+  var onlineAverage = sumOfSatellites / satelliteSize;
+  // End
+  assertEquals(expectedAverage, onlineAverage);
+  assertEquals(expectedOfflineCount, offlineSatCount);`}
+</SyntaxHighlighter>
+
+---
+
+## The stuff I didn't Cover
+
+- Immutability
+- Referential Transparency
+- Functors
+- Monads
+- Monoids
+- Algebraic Data Types
+- Tail-Recursion
+- Laziness
+- Parallelization
+- Memoization
+- Closures
+
+---
+
+## Good Resources
+
+- [Lambda Cast](https://soundcloud.com/lambda-cast)
+- [FunFunFunction](https://www.youtube.com/channel/UCO1cgjhGzsSYb1rsB4bFe4Q)
+- [Mostly Adequate Guide to FP in Javascript](https://github.com/MostlyAdequate/mostly-adequate-guide)
+- [Learn you a Haskell](http://learnyouahaskell.com/)
+- [CoRecursive](https://corecursive.com/)

@@ -9,7 +9,11 @@ import { Box } from "rebass";
 import Highlight from "./Highlight";
 import SlidePadding from "./SlidePadding";
 
-# Functional Programming
+<SlidePadding>
+
+<h1>
+<Highlight>Functional Programming</Highlight>
+</h1>
 
 By: Levi Butcher
 
@@ -17,15 +21,18 @@ By: Levi Butcher
 
 Presentation hosted at: https://i-love-functions.netlify.com
 
+</SlidePadding>
+
 ---
 
-### The Evolution of Languages
+<h4>Object-Oriented</h4>
 
-- Procedural - the birth of functions
+Use Objects that can do whatever they want
 
-- Object Oriented - global data is bad, lets group functions and data together
+<h4>Functional</h4>
 
-- Functional - Only use Pure Functions
+Only write Pure Functions
+
 
 ---
 <SlidePadding>
@@ -33,13 +40,13 @@ Presentation hosted at: https://i-love-functions.netlify.com
 ### Pure Function
 
 
-A Pure Function is a function that given the same input, you will always get the same output, ***without Side Effects***
+A Pure Function is a function that given the same input, you will always get the same output, <Highlight>without Side Effects</Highlight>
 
 f(5) -> 10
 
 f(6) -> 12
 
-f(5) -> 5 Violating Pure Functions
+<Highlight>f(5) -> 5 Violating Pure Functions</Highlight>
 
 </SlidePadding>
 
@@ -60,24 +67,22 @@ Examples of Side Effects
 * Calling databases
 * Throwing Errors
 
-If your method is returning void, it has side effects.
+If your method is returning void, it is impure.
 
 ---
 
 # A Java Pure Function
 
 <SyntaxHighlighter language="java" style={atomDark}>
-  {`
-  class Calculator {
-    public static int add(int a, int b) {
-        return a + b;
-    }
+{`class Calculator {
+  public static int add(int a, int b) {
+      return a + b;
   }
-  main() {
-      int result = Calculator.add(5,2);
-      result == 7;
-  }
-  `}
+}
+main() {
+    int result = Calculator.add(5,2);
+    result == 7;
+}`}
 </SyntaxHighlighter>
 
 ---
@@ -85,8 +90,10 @@ If your method is returning void, it has side effects.
 ### The Benifits of Pure Functions
 
 - Easy to <Highlight>Reason About</Highlight> your program
-- Highly Composable, No coupling
+- Highly Composable
 - Super easy to test (Haskell writes them for you)
+- You can cache the output and never call the function again
+- Completely Thread safe
 
 ---
 
@@ -115,7 +122,7 @@ add(5, 2);
 
 ## Function Composition
 
-We can combine functions to make new functions
+We can <Highlight>combine</Highlight> functions to make new functions
 
 f(x) = 5x;
 g(x) = x/5;
@@ -131,19 +138,19 @@ result == 5
 ---
 
 <SyntaxHighlighter language="java" style={atomDark}>
-  {`
-    public static int divideByFive(int a) {
-        return a / 5;
-    }
-    public static int multiplyByFive(int a) {
-        return a * 5;
-    }
-    public static <A, B, C> Function<A, C> compose(Function<A, B> g, Function<B, C> f) {
-        return (x) -> f.apply(g.apply(x));
-    }
-    var multiplyThenDivide = compose(divideByFive, multipleByFive);
-    multiplyThenDivide(1) == 5
-  `}
+{`public static int divideByFive(int a) {
+    return a / 5;
+}
+public static int multiplyByFive(int a) {
+    return a * 5;
+}
+public static
+<A, B, C>
+Function<A, C> compose(Function<A, B> g, Function<B, C> f) {
+    return (x) -> f.apply(g.apply(x));
+}
+var multiplyThenDivide = compose(divideByFive, multipleByFive);
+multiplyThenDivide(1) == 5`}
 </SyntaxHighlighter>
 
 ---
@@ -153,21 +160,21 @@ We can do better then that... With the power of <Highlight>Currying</Highlight>
 ---
 
 <SyntaxHighlighter language="java" style={atomDark}>
-  {`
-    public int divide(int a, int b) {
-        return a / b;
-    }
-    public int multiply(int a, int b) {
-        return a * b;
-    }
-    public static <A, B, C> Function<B, C> curry(BiFunction<A, B, C> f, A arg) {
-        return (x) -> f.apply(arg, x);
-    }
-    var multiplyByFive = FunctionalUtils.curry(Calculator::multiply, 5);
-    var divideByFive = FunctionalUtils.curry(Calculator::divide, 5);
-    var divideByFiveThenMultiplyByFive = compose(divideByFive, multiplyByFive);
-    multiplyByFiveThenDivideByFive(5)
-  `}
+{`public int divide(int a, int b) {
+    return a / b;
+}
+public int multiply(int a, int b) {
+    return a * b;
+}
+public static
+<A, B, C> Function<B, C> curry(BiFunction<A, B, C> f, A arg) {
+    return (x) -> f.apply(arg, x);
+}
+var multiplyByFive = curry(Calculator::multiply, 5);
+var divideByFive = curry(Calculator::divide, 5);
+var divideByFiveThenMultiplyByFive =
+compose(divideByFive, multiplyByFive);
+multiplyByFiveThenDivideByFive(5)`}
 </SyntaxHighlighter>
 
 ---
@@ -196,16 +203,18 @@ A <Highlight>Higher Order Function</Highlight> is a function that takes in anoth
 
 ## Reduce (also known as fold)
 
-Reduce combines a list into a single result using the function provided with the help of a identity value
+Reduce <Highlight>combines</Highlight> a list into a single result using the function provided with the help of a identity value
 
 ```java
 // [A] => B
-B reduce(A identityValue, BiFunction<A, B> func, List<A> list)
+B reduce(A identityValue, BiFunction<A, B> func,
+    List<A> list)
 
-// This version uses the two first elements of list
-B reduce(BiFunction<A, B, B> func, List<A> list)
+var listOfInts = List.of(4, 5);
+var sumOfList =
+  reduce(0, a -> a + b, listOfInts)
 
-sumOfList = listOfInts.reduce(0, a -> a + b, listOfInts)
+ sumOfList -> 5
 ```
 
 </SlidePadding>
@@ -230,13 +239,16 @@ public static <A, B> B reduce(B identityValue,
 
 ## Map
 
-Returns a new list, turning every element inside of list into a type B using the function provided
+Returns a <Highlight>new list</Highlight>, turning every element inside of list into a type B using the function provided
 
 ```java
 // [A] => [B]
 List<B> map(Function<A, B> func, List<A> list);
 
-listOfStrings = map(a -> a.toString(), listOfInts);
+var listOfInts = List.of(4, 5);
+var listOfStrings = map(a -> a.toString(), listOfInts);
+
+// listOfStrings -> ["4", "5"]
 ```
 
 </SlidePadding>
@@ -247,15 +259,15 @@ listOfStrings = map(a -> a.toString(), listOfInts);
 {`// [A] => [B]
 public static <A, B> List<B> map(Function<A,B> f, List<A> list) {
   return reduce(List.of(), (acc, curr) -> {
-      // This would be much easier if java's List api abide by pure functions
+      // This would be much easier
+      // if java's List api abide by pure functions
       var result = f.apply(curr);
       return Stream.of(
               List.of(result).stream(),
               acc.stream()
       ).flatMap(i -> i).collect(Collectors.toList());
   }, list);
-}
-`}
+}`}
 </SyntaxHighlighter>
 
 
@@ -265,13 +277,16 @@ public static <A, B> List<B> map(Function<A,B> f, List<A> list) {
 
 ## Filter
 
-Returns a new list of A, that is a list of all elements that returned true from the passed in function
+Returns a new list of A, that is a list of all elements that <Highlight>returned true</Highlight> from the passed in function
 
 ```java
 // [A] => [A]
 List<A> filter(Function<A, Boolean> func, List<A> list)
 
-only1s = filter(a -> a == 1, listOfInts);
+var listOfInts = List.of(1,0,1,0,1,0);
+var only1s = filter(a -> a == 1, listOfInts);
+
+// only1s -> [1,1,1]
 ```
 
 </SlidePadding>
@@ -280,7 +295,8 @@ only1s = filter(a -> a == 1, listOfInts);
 
 <SyntaxHighlighter language="java" style={atomDark}>
 {`// [A] => [A]
-public static <A> List<A> filter(Function<A, Boolean> f, List<A> list) {
+public static <A>
+List<A> filter(Function<A, Boolean> f, List<A> list) {
     return reduce(List.of(), (acc, curr) -> {
         var shouldReturn = f.apply(curr);
         if(shouldReturn) {
@@ -297,9 +313,15 @@ public static <A> List<A> filter(Function<A, Boolean> f, List<A> list) {
 
 ---
 
+<SitePadding>
+
 ### Alright, but I don't really see the benifits here
 
+</SitePadding>
+
 ---
+
+<div style={{"padding": "2rem"}}>
 
 # Challenge
 
@@ -309,49 +331,51 @@ Compute the average run-time of the satellites that are online, while also repor
 
 Satelite Data: ["48", "20" , "", "100", "18", "47", "", "", ""]
 
+</div>
+
 ---
 
 Inside Challenge.java
 
 <SyntaxHighlighter language="java" style={atomDark}>
 {`var expectedAverage = 46;
-  var expectedOfflineCount = 4;
-  // Start
-  var onlineSat = FunctionalUtils.filter(x -> !x.isEmpty(), satelliteData);
-  var onlineSatNumbers = FunctionalUtils.map(Integer::valueOf, onlineSat);
-  var offlineSatCount =
-    FunctionalUtils.filter(String::isEmpty, satelliteData).size();
-  var onlineLength = onlineSat.size();
-  var onlineAverage =
-    FunctionalUtils.reduce(0, Calculator::add, onlineSatNumbers) / onlineLength;
-  // End
-  assertEquals(expectedAverage, onlineAverage);
-  assertEquals(expectedOfflineCount, offlineSatCount);`}
+var expectedOfflineCount = 4;
+// Start
+var onlineSat = filter(x -> !x.isEmpty(), satelliteData);
+var onlineSatNumbers = map(Integer::valueOf, onlineSat);
+var offlineSatCount =
+  filter(String::isEmpty, satelliteData).size();
+var onlineLength = onlineSat.size();
+var onlineAverage =
+  reduce(0, Calculator::add, onlineSatNumbers) / onlineLength;
+// End
+assertEquals(expectedAverage, onlineAverage);
+assertEquals(expectedOfflineCount, offlineSatCount);`}
 </SyntaxHighlighter>
 
 ---
 
 <SyntaxHighlighter language="java" style={atomDark}>
 {`var expectedAverage = 46;
-  var expectedOfflineCount = 4;
-  // Start
-  var sumOfSatellites = 0;
-  var offlineSatCount = 0;
-  var satelliteSize = 0;
-  for (var ele : satelliteData) {
-      if(ele.isEmpty()) {
-          offlineSatCount++;
-      }
-      else {
-              var eleNumber = Integer.parseInt(ele);
-              sumOfSatellites += eleNumber;
-              satelliteSize++;
-      }
-  }
-  var onlineAverage = sumOfSatellites / satelliteSize;
-  // End
-  assertEquals(expectedAverage, onlineAverage);
-  assertEquals(expectedOfflineCount, offlineSatCount);`}
+var expectedOfflineCount = 4;
+// Start
+var sumOfSatellites = 0;
+var offlineSatCount = 0;
+var satelliteSize = 0;
+for (var ele : satelliteData) {
+    if(ele.isEmpty()) {
+        offlineSatCount++;
+    }
+    else {
+            var eleNumber = Integer.parseInt(ele);
+            sumOfSatellites += eleNumber;
+            satelliteSize++;
+    }
+}
+var onlineAverage = sumOfSatellites / satelliteSize;
+// End
+assertEquals(expectedAverage, onlineAverage);
+assertEquals(expectedOfflineCount, offlineSatCount);`}
 </SyntaxHighlighter>
 
 ---
